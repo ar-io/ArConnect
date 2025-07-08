@@ -97,6 +97,8 @@ export function useNameServiceProfile(walletAddress: string) {
 
     const profile = await getNameServiceProfile(walletAddress);
 
+    console.log("FOUND PROFILE for", walletAddress, profile);
+
     setProfile(profile);
   }, [walletAddress]);
 
