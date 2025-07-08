@@ -7,6 +7,7 @@ import { MessageNotificationView } from "~routes/popup/notification/[id]";
 import { NotificationsView } from "~routes/popup/notifications";
 import { PendingPurchaseView } from "~routes/popup/pending";
 import { PurchaseView } from "~routes/popup/purchase";
+import { ArNSPurchaseStartView } from "~routes/popup/arns/ArNSPurchaseStartView";
 import { ReceiveView } from "~routes/popup/receive";
 import { SendView } from "~routes/popup/send";
 import { AmountView } from "~routes/popup/send/amount";
@@ -114,11 +115,13 @@ export type PopupRoutePath =
   | `/agents/liquidops/${string}`
   | `/agents/liquidops/${string}/${"deposit" | "withdraw"}`
   | `/agents/liquidops/${string}/${"deposit" | "withdraw"}/${string}/confirm`
-  | `/agents/liquidops/${string}/${"deposit" | "withdraw"}/result/${"success" | "failure"}`;
+  | `/agents/liquidops/${string}/${"deposit" | "withdraw"}/result/${"success" | "failure"}`
+  | "/arns-purchase-start";
 
 export const PopupPaths = {
   Home: "/",
   Purchase: "/purchase",
+  ArNSPurchaseStart: "/arns-purchase-start",
   ConfirmPurchase: "/confirm-purchase/:quoteId?",
   PendingPurchase: "/purchase-pending",
   Receive: "/receive",
@@ -390,5 +393,9 @@ export const POPUP_ROUTES = [
   {
     path: PopupPaths.LiquidOpsConfirm,
     component: LiquidOpsConfirm,
+  },
+  {
+    path: PopupPaths.ArNSPurchaseStart,
+    component: ArNSPurchaseStartView,
   },
 ] as const satisfies RouteConfig[];

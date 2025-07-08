@@ -18,6 +18,7 @@ import browser from "webextension-polyfill";
 import CreateWanderAgentCTA from "./agents/components/CreateWanderAgentCTA";
 import { useAsyncEffect } from "~utils/react/useAsyncEffect";
 import { scheduleSwapExecution } from "~utils/agents/swap";
+import ArNSBanner from "~components/popup/home/ArNSBanner";
 
 export function HomeView() {
   const theme = useTheme();
@@ -28,6 +29,11 @@ export function HomeView() {
 
   const [announcement, _] = useStorage<boolean>({
     key: "show_announcement",
+    instance: ExtensionStorage,
+  });
+
+  const [activeAddress] = useStorage<string>({
+    key: "active_address",
     instance: ExtensionStorage,
   });
 
@@ -109,6 +115,7 @@ export function HomeView() {
     <HomeWrapper>
       {/* <AoBanner activeAddress={activeAddress} /> */}
       {loggedIn && <AnnouncementPopup isOpen={isOpen} setOpen={setOpen} />}
+      {loggedIn && <ArNSBanner activeAddress={activeAddress} />}
       <WalletHeader />
       <HomeContent>
         <Balance />
