@@ -58,6 +58,9 @@ import { LiquidOpsAgent } from "~routes/popup/agents/liquidops/agent";
 import { LiquidOpsDepositWithdraw } from "~routes/popup/agents/liquidops/depositwithdraw";
 import { LiquidOpsConfirm } from "~routes/popup/agents/liquidops/confirm";
 import { LiquidOpsResult } from "~routes/popup/agents/liquidops/result";
+import { ArNSNamePurchaseView } from "~routes/popup/arns/ArNSNamePurchaseView";
+import { ArNSConfirmPurchaseView } from "~routes/popup/arns/ArNSConfirmPurchaseView";
+import { ArNSPurchaseSuccessView } from "~routes/popup/arns/ArNSPurchaseSuccessView";
 
 export type PopupRoutePath =
   | "/"
@@ -118,13 +121,19 @@ export type PopupRoutePath =
   | `/agents/liquidops/${string}/${"deposit" | "withdraw"}/${string}/confirm`
   | `/agents/liquidops/${string}/${"deposit" | "withdraw"}/result/${"success" | "failure"}`
   | "/arns"
-  | "/arns/purchase-name-search";
+  | "/arns/purchase-name-search"
+  | `/arns/purchase-name/${string}`
+  | `/arns/confirm-purchase/${string}/${string}/${string}`
+  | `/arns/purchase-success/${string}/${string}/${string}/${string}`;
 
 export const PopupPaths = {
   Home: "/",
   Purchase: "/purchase",
   ArNSPurchaseStart: "/arns",
   ArNSPurchaseNameSearch: "/arns/purchase-name-search",
+  ArNSPurchaseName: "/arns/purchase-name/:name",
+  ArNSConfirmPurchase: "/arns/confirm-purchase/:name/:purchaseType/:purchaseYears?",
+  ArNSPurchaseSuccess: "/arns/purchase-success/:name/:purchaseType/:purchaseYears/:transactionId",
   ConfirmPurchase: "/confirm-purchase/:quoteId?",
   PendingPurchase: "/purchase-pending",
   Receive: "/receive",
@@ -404,5 +413,17 @@ export const POPUP_ROUTES = [
   {
     path: PopupPaths.ArNSPurchaseNameSearch,
     component: ArNSNameSearchView,
+  },
+  {
+    path: PopupPaths.ArNSPurchaseName,
+    component: ArNSNamePurchaseView,
+  },
+  {
+    path: PopupPaths.ArNSConfirmPurchase,
+    component: ArNSConfirmPurchaseView,
+  },
+  {
+    path: PopupPaths.ArNSPurchaseSuccess,
+    component: ArNSPurchaseSuccessView,
   },
 ] as const satisfies RouteConfig[];
