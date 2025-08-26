@@ -6,6 +6,8 @@ import { ConfirmPurchaseView } from "~routes/popup/confirm";
 import { MessageNotificationView } from "~routes/popup/notification/[id]";
 import { PendingPurchaseView } from "~routes/popup/pending";
 import { PurchaseView } from "~routes/popup/purchase";
+import { ArNSPurchaseStartView } from "~routes/popup/arns/ArNSPurchaseStartView";
+import { ArNSNameSearchView } from "~routes/popup/arns/ArNSNameSearchView";
 import { ReceiveView } from "~routes/popup/receive";
 import { SendView } from "~routes/popup/send";
 import { AmountView } from "~routes/popup/send/amount";
@@ -62,6 +64,14 @@ import { AllocationSetView } from "~routes/popup/earn/allocation-set";
 import { TokensView } from "~routes/popup/tokens";
 import { TokenDetailView } from "~routes/popup/tokens/token-detail";
 import { HelpView } from "~routes/popup/settings/help";
+import { ArNSNamePurchaseView } from "~routes/popup/arns/ArNSNamePurchaseView";
+import { ArNSConfirmPurchaseView } from "~routes/popup/arns/ArNSConfirmPurchaseView";
+import { ArNSPurchaseSuccessView } from "~routes/popup/arns/ArNSPurchaseSuccessView";
+import { ArNSPurchaseErrorView } from "~routes/popup/arns/ArNSPurchaseErrorView";
+import { ArNSManageView } from "~routes/popup/arns/ArNSManageView";
+import { ArNSConfirmSetPrimaryNameView } from "~routes/popup/arns/setPrimaryName/ArNSConfirmSetPrimaryNameView";
+import { ArNSPrimaryNameSuccessView } from "~routes/popup/arns/setPrimaryName/ArNSPrimaryNameSuccessView";
+import { ArNSPrimaryNameErrorView } from "~routes/popup/arns/setPrimaryName/ArNSPrimaryNameErrorView";
 
 export type PopupRoutePath =
   | "/"
@@ -126,11 +136,32 @@ export type PopupRoutePath =
   | `/tier`
   | `/earn`
   | `/earn/manage`
-  | `/earn/allocation-set`;
+  | `/earn/allocation-set`
+  | `/arns-purchase-start`
+  | `/arns`
+  | `/arns/manage`
+  | `/arns/purchase-name-search`
+  | `/arns/purchase-name/${string}`
+  | `/arns/confirm-purchase/${string}/${string}/${string}`
+  | `/arns/purchase-success/${string}/${string}/${string}/${string}`
+  | `/arns/purchase-error/${string}/${string}/${string}`
+  | `/arns/confirm-set-primary-name/${string}`
+  | `/arns/primary-name-success/${string}/${string}`
+  | `/arns/primary-name-error/${string}`;
 
 export const PopupPaths = {
   Home: "/",
   Purchase: "/purchase",
+  ArNSPurchaseStart: "/arns",
+  ArNSManage: "/arns/manage",
+  ArNSPurchaseNameSearch: "/arns/purchase-name-search",
+  ArNSPurchaseName: "/arns/purchase-name/:name",
+  ArNSConfirmPurchase: "/arns/confirm-purchase/:name/:purchaseType/:purchaseYears?",
+  ArNSPurchaseSuccess: "/arns/purchase-success/:name/:purchaseType/:purchaseYears/:transactionId",
+  ArNSPurchaseError: "/arns/purchase-error/:name/:purchaseType/:purchaseYears",
+  ArNSConfirmSetPrimaryName: "/arns/confirm-set-primary-name/:name",
+  ArNSPrimaryNameSuccess: "/arns/primary-name-success/:name/:transactionId",
+  ArNSPrimaryNameError: "/arns/primary-name-error/:name",
   ConfirmPurchase: "/confirm-purchase/:quoteId?",
   PendingPurchase: "/purchase-pending",
   Receive: "/receive",
@@ -432,5 +463,45 @@ export const POPUP_ROUTES = [
   {
     path: PopupPaths.AllocationSet,
     component: AllocationSetView,
+  },
+  {
+    path: PopupPaths.ArNSPurchaseStart,
+    component: ArNSPurchaseStartView,
+  },
+  {
+    path: PopupPaths.ArNSPurchaseNameSearch,
+    component: ArNSNameSearchView,
+  },
+  {
+    path: PopupPaths.ArNSPurchaseName,
+    component: ArNSNamePurchaseView,
+  },
+  {
+    path: PopupPaths.ArNSConfirmPurchase,
+    component: ArNSConfirmPurchaseView,
+  },
+  {
+    path: PopupPaths.ArNSPurchaseSuccess,
+    component: ArNSPurchaseSuccessView,
+  },
+  {
+    path: PopupPaths.ArNSPurchaseError,
+    component: ArNSPurchaseErrorView,
+  },
+  {
+    path: PopupPaths.ArNSManage,
+    component: ArNSManageView,
+  },
+  {
+    path: PopupPaths.ArNSConfirmSetPrimaryName,
+    component: ArNSConfirmSetPrimaryNameView,
+  },
+  {
+    path: PopupPaths.ArNSPrimaryNameSuccess,
+    component: ArNSPrimaryNameSuccessView,
+  },
+  {
+    path: PopupPaths.ArNSPrimaryNameError,
+    component: ArNSPrimaryNameErrorView,
   },
 ] as const satisfies RouteConfig[];

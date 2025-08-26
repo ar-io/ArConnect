@@ -1,18 +1,5 @@
 import { Button, Input, ListItem, Section, Text, Tooltip, useInput, useToasts } from "@arconnect/components-rebrand";
 import { CopyIcon } from "@iconicicons/react";
-import { removeWallet, type StoredWallet } from "~wallets";
-import { useEffect, useMemo, useState } from "react";
-import { useStorage } from "~utils/storage";
-import { ExtensionStorage } from "~utils/storage";
-import keystoneLogo from "url:/assets/hardware/keystone.png";
-import browser from "webextension-polyfill";
-import styled, { useTheme } from "styled-components";
-import { formatAddress, truncateMiddle } from "~utils/format";
-import HeadV2 from "~components/popup/HeadV2";
-import type { CommonRouteProps } from "~wallets/router/router.types";
-import { useLocation } from "~wallets/router/router.utils";
-import { LoadingView } from "~components/page/common/loading/loading.view";
-import { CopyToClipboard } from "~components/CopyToClipboard";
 import {
   AlertCircle,
   ArrowUpRight,
@@ -23,11 +10,25 @@ import {
   QrCode02,
   Share03,
 } from "@untitled-ui/icons-react";
+import { useEffect, useMemo, useState } from "react";
+import styled, { useTheme } from "styled-components";
+import keystoneLogo from "url:/assets/hardware/keystone.png";
+import browser from "webextension-polyfill";
+import { CopyToClipboard } from "~components/CopyToClipboard";
+import { ArioIcon } from "~components/embed";
 import { HorizontalLine } from "~components/HorizontalLine";
-import SliderMenu from "~components/SliderMenu";
-import { getNameServiceProfile } from "~lib/nameservice";
+import { LoadingView } from "~components/page/common/loading/loading.view";
+import HeadV2 from "~components/popup/HeadV2";
 import { BackupSeedphraseWarning } from "~components/popup/settings/BackupSeedphraseWarning";
-import { useAsyncEffect } from "~utils/react/useAsyncEffect";
+import SliderMenu from "~components/SliderMenu";
+import { useNameServiceProfile } from "~lib/nameservice";
+import { decodeDomainToASCII } from "~routes/popup/arns/utils";
+import { formatAddress, truncateMiddle } from "~utils/format";
+import { ExtensionStorage, useStorage } from "~utils/storage";
+import { removeWallet, type StoredWallet } from "~wallets";
+import { PopupPaths } from "~wallets/router/popup/popup.routes";
+import type { CommonRouteProps } from "~wallets/router/router.types";
+import { useLocation } from "~wallets/router/router.utils";
 
 export interface WalletViewParams {
   address: string;
@@ -43,6 +44,8 @@ export function WalletView({ params: { address } }: WalletViewProps) {
   const [open, setOpen] = useState(false);
 
   const theme = useTheme();
+
+  const { data: nameServiceProfile } = useNameServiceProfile(address);
 
   // wallets
   const [wallets, setWallets] = useStorage<StoredWallet[]>(
@@ -67,27 +70,17 @@ export function WalletView({ params: { address } }: WalletViewProps) {
   // toasts
   const { setToast } = useToasts();
 
-  // name service name
-  const [nameServiceName, setNameServiceName] = useState<string>();
-
-  useAsyncEffect(async () => {
-    if (!wallet) return;
-
-    const arnsProfile = await getNameServiceProfile(wallet.address);
-    setNameServiceName(arnsProfile?.name);
-  }, [wallet?.address]);
-
   // wallet name input
   const walletNameInput = useInput();
 
   useEffect(() => {
     if (!wallet) return;
-    walletNameInput.setState(nameServiceName || wallet.nickname);
-  }, [wallet, nameServiceName]);
+    walletNameInput.setState(nameServiceProfile?.name || wallet.nickname);
+  }, [wallet, nameServiceProfile]);
 
   // update nickname function
   async function updateNickname() {
-    if (!!nameServiceName) return;
+    if (!!nameServiceProfile) return;
 
     // check name
     const newName = walletNameInput.state;
@@ -154,14 +147,14 @@ export function WalletView({ params: { address } }: WalletViewProps) {
                 gap: "1rem",
               }}>
               <WalletName>
-                {nameServiceName || wallet.nickname}
+                {decodeDomainToASCII(nameServiceProfile?.name || wallet.nickname)}
                 {wallet.type === "hardware" && (
                   <Tooltip content={wallet.api.slice(0, 1).toUpperCase() + wallet.api.slice(1)} position="bottom">
                     <HardwareWalletIcon src={wallet.api === "keystone" ? keystoneLogo : undefined} />
                   </Tooltip>
                 )}
               </WalletName>
-              {nameServiceName ? (
+              {nameServiceProfile ? (
                 <Tooltip position="bottomEnd" content={browser.i18n.getMessage("cannot_edit_with_name_service")}>
                   <Edit02 style={{ cursor: "not-allowed" }} height={20} width={20} />
                 </Tooltip>
@@ -177,7 +170,7 @@ export function WalletView({ params: { address } }: WalletViewProps) {
                 type="text"
                 placeholder={browser.i18n.getMessage("edit_wallet_name")}
                 fullWidth
-                disabled={!!nameServiceName}
+                disabled={!!nameServiceProfile}
               />
               <Button
                 style={{ width: "100px" }}
@@ -187,7 +180,7 @@ export function WalletView({ params: { address } }: WalletViewProps) {
                   }
                   setEditName(false);
                 }}
-                disabled={!!nameServiceName}>
+                disabled={!!nameServiceProfile}>
                 {browser.i18n.getMessage(walletNameInput.state === wallet.nickname ? "cancel" : "save")}
               </Button>
             </div>
@@ -198,6 +191,15 @@ export function WalletView({ params: { address } }: WalletViewProps) {
             labelAs={WalletAddress}
             text={wallet.address}
             iconSize={24}
+          />
+
+          <ListItem
+            title={"Manage ArNS"}
+            titleStyle={{ fontSize: 18, fontWeight: 500 }}
+            icon={<ArioIcon width="24px" height="24px" />}
+            hideSquircle
+            showArrow
+            onClick={() => navigate(PopupPaths.ArNSManage)}
           />
           <HorizontalLine />
           {!isSeedphraseBackedUp && <BackupSeedphraseWarning />}
